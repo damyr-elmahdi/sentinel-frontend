@@ -1,0 +1,109 @@
+.dashboard-root { display: flex; min-height: 100vh; background: #f7f9fb; }
+.dashboard-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.dash-topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #c3c7ce;
+  padding: 20px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dash-title { font-size: 22px; font-weight: 700; color: #001629; margin: 0; letter-spacing: -0.01em; }
+.dash-date { font-size: 11px; letter-spacing: 0.06em; color: #73777e; margin-top: 2px; display: block; text-transform: uppercase; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.dash-content { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+.two-col-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.section-card { padding: 24px; }
+
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.card-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 600; color: #001629; letter-spacing: -0.01em; }
+
+/* Calendar */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-weekday { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; color: #73777e; text-align: center; padding: 8px 0 4px; text-transform: uppercase; }
+.cal-day {
+  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 13px; font-family: 'Inter', sans-serif; color: #42474d; border-radius: 4px; position: relative; cursor: default;
+}
+.cal-empty { opacity: 0; pointer-events: none; }
+.cal-today { background: #001629; color: #ffffff; font-weight: 600; }
+.cal-has-shift { font-weight: 600; color: #0059bb; }
+.shift-dot { width: 5px; height: 5px; border-radius: 50%; background: #0059bb; position: absolute; bottom: 3px; }
+.cal-legend { display: flex; align-items: center; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e6e8ea; }
+.cal-today-swatch { width: 14px; height: 14px; background: #001629; border-radius: 3px; display: inline-block; margin-right: 6px; }
+
+/* Shifts */
+.shift-list { display: flex; flex-direction: column; gap: 10px; }
+.shift-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: #f7f9fb; border: 1px solid #e6e8ea; border-radius: 6px; }
+.shift-date-badge { width: 44px; text-align: center; background: #001629; border-radius: 6px; padding: 6px 0; flex-shrink: 0; }
+.shift-day { display: block; font-size: 20px; font-weight: 700; color: #ffffff; line-height: 1; }
+.shift-month { display: block; font-size: 9px; letter-spacing: 0.1em; color: #7293b6; text-transform: uppercase; margin-top: 2px; }
+.shift-time { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: #0059bb; letter-spacing: 0.03em; }
+.shift-zone { font-size: 13px; color: #42474d; margin-top: 3px; }
+
+/* Clock */
+.clock-display { text-align: center; padding: 32px 0; }
+.clock-timer { font-size: 56px; font-weight: 700; color: #001629; letter-spacing: -0.04em; line-height: 1; }
+
+/* Data Table */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: #73777e; padding: 8px 12px; text-align: left; border-bottom: 1px solid #c3c7ce; text-transform: uppercase; }
+.data-table td { padding: 12px; border-bottom: 0.5px solid #e6e8ea; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #42474d; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:nth-child(even) td { background: #f7f9fb; }
+
+/* Tasks */
+.add-task-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.add-task-row .sentinel-input { flex: 1; }
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+.task-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: #ffffff; border: 1px solid #e6e8ea; border-radius: 6px;
+}
+.task-done { opacity: 0.55; }
+.task-done .task-text { text-decoration: line-through; color: #73777e; }
+.task-check { width: 16px; height: 16px; accent-color: #0059bb; cursor: pointer; flex-shrink: 0; }
+.task-text { flex: 1; font-size: 14px; color: #191c1e; }
+.task-delete { background: none; border: none; color: #73777e; cursor: pointer; font-size: 18px; padding: 0 4px; line-height: 1; }
+.task-delete:hover { color: #dc2626; }
+.icon-btn { padding: 6px 10px; }
+
+/* Inbox */
+.inbox-layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; height: calc(100vh - 160px); }
+.inbox-list { display: flex; flex-direction: column; overflow: hidden; }
+.inbox-list .card-header { padding: 20px 20px 0; flex-shrink: 0; }
+.msg-item {
+  padding: 14px 20px; border-bottom: 1px solid #f2f4f6; cursor: pointer;
+  transition: background 0.1s;
+}
+.msg-item:hover { background: #f7f9fb; }
+.msg-item.msg-active { background: #eef4ff; border-left: 3px solid #0059bb; }
+.msg-unread .msg-from { font-weight: 700; }
+.msg-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.msg-from { font-family: 'Hanken Grotesk', sans-serif; font-size: 13px; color: #001629; }
+.msg-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #73777e; }
+.msg-subject { font-size: 13px; color: #42474d; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inbox-detail { padding: 28px; overflow-y: auto; }
+.detail-header { display: flex; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid #e6e8ea; margin-bottom: 24px; }
+.detail-body { font-size: 15px; color: #42474d; line-height: 1.75; }
+.inbox-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* Profile */
+.profile-hero { display: flex; align-items: center; gap: 20px; padding: 24px; background: #f2f4f6; border-radius: 8px; margin-bottom: 24px; }
+.profile-big-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: #0059bb; color: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; flex-shrink: 0;
+}
+.profile-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.profile-field { display: flex; flex-direction: column; }
+.profile-value { font-size: 15px; color: #001629; padding: 10px 0; border-bottom: 1px solid #e6e8ea; }
+
+@media (max-width: 900px) {
+  .two-col-layout { grid-template-columns: 1fr; }
+  .inbox-layout { grid-template-columns: 1fr; }
+  .profile-fields { grid-template-columns: 1fr; }
+  .dash-content { padding: 16px; }
+}

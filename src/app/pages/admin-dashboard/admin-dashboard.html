@@ -1,0 +1,392 @@
+<div class="dashboard-root">
+  <app-sidebar
+    [items]="navItems"
+    [activeId]="activeSection()"
+    role="admin"
+    userName="Admin User"
+    userRole="System Administrator"
+    (navSelect)="activeSection.set($event)"
+  ></app-sidebar>
+
+  <main class="dashboard-main">
+    <!-- Top Bar -->
+    <header class="dash-topbar">
+      <div>
+        <h1 class="dash-title font-display">{{ navItems | adminTitleFor: activeSection() }}</h1>
+        <span class="dash-date font-mono">ADMIN COMMAND CENTER</span>
+      </div>
+      <div class="topbar-right">
+        <span class="chip" style="background:#dcfce7;color:#166534;">
+          <span class="live-dot"></span> {{ onlineCount }} NODES ONLINE
+        </span>
+        <span class="chip" style="background:#fee2e2;color:#dc2626;" *ngIf="alertCount > 0">
+          ⚠ {{ alertCount }} ALERT
+        </span>
+      </div>
+    </header>
+
+    <div class="dash-content">
+
+      <!-- ===== STATUS ===== -->
+      <ng-container *ngIf="activeSection() === 'status'">
+        <!-- KPI Row -->
+        <div class="kpi-row">
+          <div class="kpi-card sentinel-card">
+            <div class="kpi-value font-display" style="color:#16a34a;">{{ onlineCount }}</div>
+            <div class="kpi-label font-mono">ONLINE</div>
+          </div>
+          <div class="kpi-card sentinel-card">
+            <div class="kpi-value font-display" style="color:#dc2626;">{{ alertCount }}</div>
+            <div class="kpi-label font-mono">ALERTS</div>
+          </div>
+          <div class="kpi-card sentinel-card">
+            <div class="kpi-value font-display" style="color:#64748b;">{{ offlineCount }}</div>
+            <div class="kpi-label font-mono">OFFLINE</div>
+          </div>
+          <div class="kpi-card sentinel-card">
+            <div class="kpi-value font-display" style="color:#0059bb;">{{ sensors.length }}</div>
+            <div class="kpi-label font-mono">TOTAL NODES</div>
+          </div>
+        </div>
+
+        <!-- Sensors Grid + Alerts -->
+        <div class="status-layout">
+          <div class="sentinel-card section-card">
+            <div class="card-header">
+              <span class="card-title font-display">IoT Node Registry</span>
+              <span class="font-mono" style="font-size:11px;color:#73777e;">LIVE · AUTO-REFRESH</span>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="font-mono">NODE ID</th>
+                  <th class="font-mono">NAME</th>
+                  <th class="font-mono">TYPE</th>
+                  <th class="font-mono">VALUE</th>
+                  <th class="font-mono">ZONE</th>
+                  <th class="font-mono">STATUS</th>
+                  <th class="font-mono">LAST SEEN</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let s of sensors">
+                  <td class="font-mono" style="color:#0059bb;font-weight:600;">{{ s.id }}</td>
+                  <td style="font-weight:500;color:#001629;">{{ s.name }}</td>
+                  <td class="font-mono" style="font-size:11px;color:#73777e;">{{ s.type }}</td>
+                  <td class="font-mono" style="font-weight:600;">{{ s.value }}</td>
+                  <td class="font-mono" style="font-size:11px;">{{ s.zone }}</td>
+                  <td><span class="chip" [ngStyle]="sensorStatusStyle(s.status)">{{ s.status | uppercase }}</span></td>
+                  <td class="font-mono" style="color:#73777e;font-size:11px;">{{ s.lastSeen }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="sentinel-card section-card">
+            <div class="card-header">
+              <span class="card-title font-display">Alert Feed</span>
+              <span class="chip" style="background:#fee2e2;color:#dc2626;">{{ recentAlerts.length }}</span>
+            </div>
+            <div class="alert-feed">
+              <div class="alert-item" *ngFor="let a of recentAlerts">
+                <span class="chip" [ngStyle]="alertStyle(a.level)" style="flex-shrink:0;">{{ a.level }}</span>
+                <div class="alert-content">
+                  <div class="alert-msg">{{ a.msg }}</div>
+                  <div class="alert-meta font-mono">{{ a.zone }} · {{ a.time }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ===== INFORM ===== -->
+      <ng-container *ngIf="activeSection() === 'inform'">
+        <div class="two-col-layout">
+          <!-- Compose -->
+          <div class="sentinel-card section-card">
+            <div class="card-header">
+              <span class="card-title font-display">Broadcast Message</span>
+              <button class="btn-primary" (click)="sendingAnnouncement.set(true)" *ngIf="!sendingAnnouncement()">+ New</button>
+              <button class="btn-ghost" (click)="sendingAnnouncement.set(false)" *ngIf="sendingAnnouncement()">Cancel</button>
+            </div>
+
+            <div class="compose-form" *ngIf="sendingAnnouncement()">
+              <div class="form-group">
+                <label class="sentinel-label">SUBJECT</label>
+                <input class="sentinel-input" placeholder="Announcement title" [(ngModel)]="newAnnouncement.title">
+              </div>
+              <div class="form-group">
+                <label class="sentinel-label">PRIORITY</label>
+                <select class="sentinel-input" [(ngModel)]="newAnnouncement.priority">
+                  <option value="HIGH">HIGH</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="LOW">LOW</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="sentinel-label">MESSAGE</label>
+                <textarea class="sentinel-input" rows="5" placeholder="Write your announcement..." [(ngModel)]="newAnnouncement.body" style="resize:vertical;"></textarea>
+              </div>
+              <button class="btn-primary" style="width:100%;justify-content:center;" (click)="sendAnnouncement()">
+                📢 Send to All Employees
+              </button>
+            </div>
+
+            <div class="inform-empty" *ngIf="!sendingAnnouncement()">
+              <p style="font-size:14px;color:#73777e;">Click <strong>+ New</strong> to compose a broadcast message to all employees.</p>
+            </div>
+          </div>
+
+          <!-- Announcements List -->
+          <div class="sentinel-card section-card">
+            <div class="card-header">
+              <span class="card-title font-display">Sent Announcements</span>
+              <span class="chip" style="background:#f2f4f6;color:#42474d;">{{ announcements.length }}</span>
+            </div>
+            <div class="ann-list">
+              <div class="ann-item" *ngFor="let a of announcements">
+                <div class="ann-top">
+                  <span class="ann-title font-display">{{ a.title }}</span>
+                  <button class="task-delete" (click)="deleteAnnouncement(a.id)">×</button>
+                </div>
+                <p class="ann-body">{{ a.body }}</p>
+                <div class="ann-meta">
+                  <span class="chip" [ngStyle]="annPriorityStyle(a.priority)">{{ a.priority }}</span>
+                  <span class="font-mono" style="font-size:10px;color:#73777e;">{{ a.date }} · {{ a.author }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ===== EMPLOYEES ===== -->
+      <ng-container *ngIf="activeSection() === 'employees'">
+        <!-- Edit Modal -->
+        <div class="modal-overlay" *ngIf="editEmployee()">
+          <div class="modal-box sentinel-card">
+            <div class="card-header">
+              <span class="card-title font-display">Edit Employee</span>
+              <button class="btn-ghost icon-btn" (click)="editEmployee.set(null)">×</button>
+            </div>
+            <div class="modal-form">
+              <div class="form-group"><label class="sentinel-label">FULL NAME</label><input class="sentinel-input" [(ngModel)]="editEmployee()!.name"></div>
+              <div class="form-group"><label class="sentinel-label">ROLE</label><input class="sentinel-input" [(ngModel)]="editEmployee()!.role"></div>
+              <div class="form-group"><label class="sentinel-label">DEPARTMENT</label><input class="sentinel-input" [(ngModel)]="editEmployee()!.department"></div>
+              <div class="form-group"><label class="sentinel-label">EMAIL</label><input class="sentinel-input" [(ngModel)]="editEmployee()!.email"></div>
+              <div class="form-group">
+                <label class="sentinel-label">STATUS</label>
+                <select class="sentinel-input" [(ngModel)]="editEmployee()!.status">
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;">
+              <button class="btn-primary" (click)="saveEditEmployee()">Save Changes</button>
+              <button class="btn-ghost" (click)="editEmployee.set(null)">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sentinel-card section-card">
+          <div class="card-header">
+            <span class="card-title font-display">Employee Register</span>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input class="sentinel-input" placeholder="Search employees..." [(ngModel)]="employeeSearch" style="width:220px;">
+              <button class="btn-primary" (click)="showAddEmployee.set(true)">+ Add Employee</button>
+            </div>
+          </div>
+
+          <!-- Add Form -->
+          <div class="add-row-form" *ngIf="showAddEmployee()">
+            <div class="add-fields">
+              <input class="sentinel-input" placeholder="Full name" [(ngModel)]="newEmployee.name">
+              <input class="sentinel-input" placeholder="Role" [(ngModel)]="newEmployee.role">
+              <input class="sentinel-input" placeholder="Department" [(ngModel)]="newEmployee.department">
+              <input class="sentinel-input" placeholder="Email" [(ngModel)]="newEmployee.email">
+              <input class="sentinel-input" placeholder="Badge ID" [(ngModel)]="newEmployee.badge">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button class="btn-primary" (click)="addEmployee()">Add</button>
+              <button class="btn-ghost" (click)="showAddEmployee.set(false)">Cancel</button>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="font-mono">NAME</th>
+                <th class="font-mono">BADGE</th>
+                <th class="font-mono">ROLE</th>
+                <th class="font-mono">DEPARTMENT</th>
+                <th class="font-mono">EMAIL</th>
+                <th class="font-mono">STATUS</th>
+                <th class="font-mono">JOINED</th>
+                <th class="font-mono">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let e of employees | filterEmployees: employeeSearch">
+                <td style="font-weight:600;color:#001629;">{{ e.name }}</td>
+                <td class="font-mono" style="color:#0059bb;font-size:11px;">{{ e.badge }}</td>
+                <td>{{ e.role }}</td>
+                <td style="color:#73777e;">{{ e.department }}</td>
+                <td class="font-mono" style="font-size:11px;">{{ e.email }}</td>
+                <td>
+                  <span class="chip" [ngStyle]="e.status === 'active' ? {background:'#dcfce7',color:'#16a34a'} : {background:'#f1f5f9',color:'#64748b'}">
+                    {{ e.status | uppercase }}
+                  </span>
+                </td>
+                <td class="font-mono" style="font-size:11px;color:#73777e;">{{ e.joined }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn-ghost" style="padding:4px 10px;font-size:12px;" (click)="startEditEmployee(e)">Edit</button>
+                    <button class="btn-ghost" style="padding:4px 10px;font-size:12px;color:#dc2626;" (click)="deleteEmployee(e.id)">Del</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <!-- ===== TASKS ===== -->
+      <ng-container *ngIf="activeSection() === 'tasks'">
+        <div class="sentinel-card section-card">
+          <div class="card-header">
+            <span class="card-title font-display">Task Oversight</span>
+            <button class="btn-primary" (click)="showAddTask.set(!showAddTask())">{{ showAddTask() ? 'Cancel' : '+ Assign Task' }}</button>
+          </div>
+
+          <!-- Add Task Form -->
+          <div class="add-row-form" *ngIf="showAddTask()">
+            <div class="add-fields">
+              <input class="sentinel-input" placeholder="Task description" [(ngModel)]="newAdminTask.text" style="flex:2;">
+              <select class="sentinel-input" [(ngModel)]="newAdminTask.assignedTo" style="flex:1;">
+                <option value="">Assign to...</option>
+                <option *ngFor="let e of employees" [value]="e.name">{{ e.name }}</option>
+              </select>
+              <select class="sentinel-input" [(ngModel)]="newAdminTask.priority" style="flex:0.5;">
+                <option value="HIGH">HIGH</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="LOW">LOW</option>
+              </select>
+              <input class="sentinel-input" type="date" [(ngModel)]="newAdminTask.due" style="flex:0.8;">
+            </div>
+            <button class="btn-primary" style="margin-top:10px;" (click)="addAdminTask()">Create Task</button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="font-mono">TASK</th>
+                <th class="font-mono">ASSIGNED TO</th>
+                <th class="font-mono">PRIORITY</th>
+                <th class="font-mono">DUE DATE</th>
+                <th class="font-mono">STATUS</th>
+                <th class="font-mono">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of adminTasks">
+                <td style="max-width:280px;font-size:13px;color:#001629;">{{ t.text }}</td>
+                <td style="font-weight:500;">{{ t.assignedTo }}</td>
+                <td><span class="chip" [ngStyle]="taskPriorityStyle(t.priority)">{{ t.priority }}</span></td>
+                <td class="font-mono" style="font-size:11px;color:#73777e;">{{ t.due }}</td>
+                <td>
+                  <button class="chip" [ngStyle]="taskStatusStyle(t.status)" (click)="cycleTaskStatus(t)" style="border:none;cursor:pointer;" title="Click to advance status">
+                    {{ t.status }}
+                  </button>
+                </td>
+                <td>
+                  <button class="btn-ghost" style="padding:4px 10px;font-size:12px;color:#dc2626;" (click)="deleteAdminTask(t.id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <!-- ===== SCHEDULE ===== -->
+      <ng-container *ngIf="activeSection() === 'schedule'">
+        <!-- Edit Schedule Modal -->
+        <div class="modal-overlay" *ngIf="editSchedule()">
+          <div class="modal-box sentinel-card">
+            <div class="card-header">
+              <span class="card-title font-display">Edit Shift</span>
+              <button class="btn-ghost icon-btn" (click)="editSchedule.set(null)">×</button>
+            </div>
+            <div class="modal-form">
+              <div class="form-group"><label class="sentinel-label">EMPLOYEE</label>
+                <select class="sentinel-input" [(ngModel)]="editSchedule()!.employeeName">
+                  <option *ngFor="let e of employees" [value]="e.name">{{ e.name }}</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="sentinel-label">DATE</label><input class="sentinel-input" type="date" [(ngModel)]="editSchedule()!.date"></div>
+              <div class="form-group"><label class="sentinel-label">START TIME</label><input class="sentinel-input" type="time" [(ngModel)]="editSchedule()!.timeStart"></div>
+              <div class="form-group"><label class="sentinel-label">END TIME</label><input class="sentinel-input" type="time" [(ngModel)]="editSchedule()!.timeEnd"></div>
+              <div class="form-group"><label class="sentinel-label">ZONE / LOCATION</label><input class="sentinel-input" [(ngModel)]="editSchedule()!.zone"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;">
+              <button class="btn-primary" (click)="saveEditSchedule()">Save</button>
+              <button class="btn-ghost" (click)="editSchedule.set(null)">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sentinel-card section-card">
+          <div class="card-header">
+            <span class="card-title font-display">Master Schedule</span>
+            <button class="btn-primary" (click)="showAddSchedule.set(!showAddSchedule())">{{ showAddSchedule() ? 'Cancel' : '+ Add Shift' }}</button>
+          </div>
+
+          <!-- Add Shift Form -->
+          <div class="add-row-form" *ngIf="showAddSchedule()">
+            <div class="add-fields">
+              <select class="sentinel-input" [(ngModel)]="newSchedule.employeeName" style="flex:1;">
+                <option value="">Select employee...</option>
+                <option *ngFor="let e of employees" [value]="e.name">{{ e.name }}</option>
+              </select>
+              <input class="sentinel-input" type="date" [(ngModel)]="newSchedule.date" style="flex:0.8;">
+              <input class="sentinel-input" type="time" [(ngModel)]="newSchedule.timeStart" style="flex:0.6;">
+              <input class="sentinel-input" type="time" [(ngModel)]="newSchedule.timeEnd" style="flex:0.6;">
+              <input class="sentinel-input" placeholder="Zone / Location" [(ngModel)]="newSchedule.zone" style="flex:1.2;">
+            </div>
+            <button class="btn-primary" style="margin-top:10px;" (click)="addSchedule()">Add Shift</button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="font-mono">EMPLOYEE</th>
+                <th class="font-mono">DATE</th>
+                <th class="font-mono">START</th>
+                <th class="font-mono">END</th>
+                <th class="font-mono">ZONE / LOCATION</th>
+                <th class="font-mono">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of schedules">
+                <td style="font-weight:600;color:#001629;">{{ s.employeeName }}</td>
+                <td class="font-mono" style="font-size:12px;">{{ s.date }}</td>
+                <td class="font-mono" style="color:#16a34a;font-weight:600;">{{ s.timeStart }}</td>
+                <td class="font-mono" style="color:#dc2626;font-weight:600;">{{ s.timeEnd }}</td>
+                <td>{{ s.zone }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn-ghost" style="padding:4px 10px;font-size:12px;" (click)="startEditSchedule(s)">Edit</button>
+                    <button class="btn-ghost" style="padding:4px 10px;font-size:12px;color:#dc2626;" (click)="deleteSchedule(s.id)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+    </div>
+  </main>
+</div>
