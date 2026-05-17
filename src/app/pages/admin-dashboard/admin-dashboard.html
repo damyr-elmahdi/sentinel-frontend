@@ -387,6 +387,82 @@
         </div>
       </ng-container>
 
+      <!-- ===== PROFILE ===== -->
+<ng-container *ngIf="activeSection() === 'profile'">
+  <div class="two-col-layout">
+    <div class="sentinel-card section-card">
+      <div class="card-header">
+        <span class="card-title font-display">Admin Profile</span>
+        <button class="btn-ghost" (click)="editingAdminProfile.set(!editingAdminProfile())">
+          {{ editingAdminProfile() ? 'Cancel' : 'Edit' }}
+        </button>
+      </div>
+      <div class="admin-profile-hero">
+        <div class="admin-avatar font-display">
+          {{ getAdminField('name').charAt(0) }}{{ getAdminField('name').split(' ')[1]?.charAt(0) }}
+        </div>
+        <div>
+          <div class="font-display" style="font-size:22px;font-weight:700;color:#001629;">{{ getAdminField('name') }}</div>
+          <div class="font-mono" style="font-size:11px;color:#73777e;margin-top:4px;">BADGE: {{ getAdminField('badge') }}</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="chip" style="background:#fee2e2;color:#dc2626;">{{ getAdminField('role') }}</span>
+            <span class="chip" style="background:#dcfce7;color:#166534;">{{ getAdminField('mfa') }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-fields-grid">
+        <div class="profile-field-item" *ngFor="let f of adminProfileFields">
+          <label class="sentinel-label">{{ f.label }}</label>
+          <input *ngIf="editingAdminProfile() && f.editable" class="sentinel-input"
+            [ngModel]="getAdminField(f.key)" (ngModelChange)="setAdminField(f.key, $event)" [name]="f.key">
+          <div *ngIf="!editingAdminProfile() || !f.editable" class="profile-value-text">
+            {{ getAdminField(f.key) }}
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:24px;" *ngIf="editingAdminProfile()">
+        <button class="btn-primary" (click)="editingAdminProfile.set(false)">Save Changes</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="sentinel-card section-card">
+        <div class="card-header">
+          <span class="card-title font-display">System Access</span>
+          <span class="chip" style="background:#fee2e2;color:#dc2626;">ADMIN</span>
+        </div>
+        <div class="access-list">
+          <div class="access-item" *ngFor="let a of adminAccessList">
+            <div class="access-icon">{{ a.icon }}</div>
+            <div class="access-info">
+              <div class="access-label font-display">{{ a.label }}</div>
+              <div class="access-desc font-mono">{{ a.desc }}</div>
+            </div>
+            <span class="chip" [ngStyle]="a.granted ? {background:'#dcfce7',color:'#16a34a'} : {background:'#fee2e2',color:'#dc2626'}">
+              {{ a.granted ? 'GRANTED' : 'DENIED' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sentinel-card section-card">
+        <div class="card-header">
+          <span class="card-title font-display">Recent Activity</span>
+          <span class="font-mono" style="font-size:10px;color:#73777e;">AUDIT LOG</span>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let a of adminActivity">
+            <div class="activity-dot" [ngStyle]="{background: a.color}"></div>
+            <div class="activity-content">
+              <div class="activity-action">{{ a.action }}</div>
+              <div class="activity-time font-mono">{{ a.time }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
     </div>
   </main>
 </div>

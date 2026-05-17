@@ -58,6 +58,42 @@
 .task-delete:hover { color: #dc2626; }
 .icon-btn { padding: 4px 8px; }
 
+
+
+
+/* Admin Profile */
+.admin-profile-hero {
+  display: flex; align-items: center; gap: 20px;
+  padding: 24px; background: #f2f4f6; border-radius: 8px; margin-bottom: 24px;
+}
+.admin-avatar {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: linear-gradient(135deg, #001629, #0059bb);
+  color: #ffffff; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700; flex-shrink: 0;
+  border: 3px solid rgba(0,89,187,0.3);
+}
+.profile-fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.profile-field-item { display: flex; flex-direction: column; }
+.profile-value-text { font-size: 14px; color: #001629; padding: 10px 0; border-bottom: 1px solid #e6e8ea; }
+
+.access-list { display: flex; flex-direction: column; gap: 8px; }
+.access-item {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  background: #f7f9fb; border: 1px solid #e6e8ea; border-radius: 6px;
+}
+.access-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+.access-info { flex: 1; }
+.access-label { font-size: 13px; font-weight: 600; color: #001629; margin-bottom: 2px; }
+.access-desc { font-size: 10px; letter-spacing: 0.05em; color: #73777e; text-transform: uppercase; }
+
+.activity-list { display: flex; flex-direction: column; }
+.activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid #e6e8ea; }
+.activity-item:last-child { border-bottom: none; }
+.activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.activity-action { font-size: 13px; color: #191c1e; margin-bottom: 3px; }
+.activity-time { font-size: 10px; letter-spacing: 0.06em; color: #73777e; }
+
 /* Add Row Form */
 .add-row-form {
   padding: 16px; background: #f2f4f6; border: 1px solid #e6e8ea;

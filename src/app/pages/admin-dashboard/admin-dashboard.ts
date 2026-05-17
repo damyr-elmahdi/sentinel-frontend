@@ -39,6 +39,7 @@ export class AdminDashboardComponent {
     { id: 'employees',label: 'Employee Register',   icon: '👥' },
     { id: 'tasks',    label: 'Task Oversight',      icon: '📋' },
     { id: 'schedule', label: 'Schedule Management', icon: '📆' },
+    { id: 'profile', label: 'Admin Profile', icon: '🧑‍💼' }
   ];
 
   // ─── STATUS ───────────────────────────────────────────────
@@ -197,4 +198,49 @@ export class AdminDashboardComponent {
     this.editSchedule.set(null);
   }
   deleteSchedule(id: number) { this.schedules = this.schedules.filter(s => s.id !== id); }
+
+  // ─── PROFILE ─────────────────────────────────────────────
+  adminProfile: Record<string, string> = {
+  name: 'Admin User', username: 'admin', email: 'admin@sentinel.io',
+  phone: '+1 555 999 0001', department: 'System Administration',
+  role: 'System Administrator', badge: 'ADM-0001', joined: 'January 2023',
+  clearance: 'Level 5 — Full Access', timezone: 'UTC+0', mfa: 'Enabled'
+};
+adminProfileFields = [
+  { label: 'FULL NAME',  key: 'name',       editable: true  },
+  { label: 'USERNAME',   key: 'username',   editable: true  },
+  { label: 'EMAIL',      key: 'email',      editable: true  },
+  { label: 'PHONE',      key: 'phone',      editable: true  },
+  { label: 'DEPARTMENT', key: 'department', editable: false },
+  { label: 'ROLE',       key: 'role',       editable: false },
+  { label: 'BADGE ID',   key: 'badge',      editable: false },
+  { label: 'CLEARANCE',  key: 'clearance',  editable: false },
+  { label: 'TIMEZONE',   key: 'timezone',   editable: true  },
+  { label: 'MFA STATUS', key: 'mfa',        editable: false },
+  { label: 'JOINED',     key: 'joined',     editable: false },
+];
+editingAdminProfile = signal(false);
+getAdminField(key: string): string { return this.adminProfile[key] ?? ''; }
+setAdminField(key: string, val: string) { this.adminProfile[key] = val; }
+
+adminAccessList = [
+  { icon: '🛰️', label: 'IoT Node Control',    desc: 'Read / Write / Command', granted: true  },
+  { icon: '👥', label: 'Employee Management', desc: 'Full CRUD access',        granted: true  },
+  { icon: '📆', label: 'Schedule Management', desc: 'Full CRUD access',        granted: true  },
+  { icon: '📢', label: 'Broadcast Messaging', desc: 'Send to all employees',   granted: true  },
+  { icon: '📊', label: 'Analytics & Reports', desc: 'Read-only export',        granted: true  },
+  { icon: '🔧', label: 'System Config',       desc: 'Infrastructure settings', granted: true  },
+  { icon: '🗑️', label: 'Data Deletion',       desc: 'Permanent record removal',granted: false },
+];
+
+adminActivity = [
+  { action: 'Assigned task to Liu Wei — RFID Node D1',  time: 'Today 14:32',     color: '#0059bb' },
+  { action: 'Broadcast: System maintenance window',      time: 'Today 09:15',     color: '#d97706' },
+  { action: 'Added employee: Anna Kovacs (EMP-0065)',    time: 'Yesterday 16:40', color: '#16a34a' },
+  { action: 'Edited schedule — John Doe shift 19 May',  time: 'Yesterday 11:22', color: '#16a34a' },
+  { action: 'Deleted task: Old CCTV audit entry',        time: '2 days ago',      color: '#dc2626' },
+  { action: 'Logged in from 192.168.1.42',               time: '2 days ago',      color: '#73777e' },
+];
+
+  
 }

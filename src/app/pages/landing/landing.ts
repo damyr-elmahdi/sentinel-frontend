@@ -52,10 +52,5 @@ export class LandingComponent {
     { level: 'OK',   msg: 'System health check passed', time: '14:00', style: { background: '#dcfce7', color: '#166534' } },
   ];
 
-  archLayers = [
-    { label: 'IOT LAYER', items: ['ESP32 Env Node', 'ESP32 RFID Node', 'DHT11', 'Flame Sensor', 'Water Sensor', 'RC522', 'Servo', 'Relay', 'Buzzer'] },
-    { label: 'BACKEND LAYER', items: ['Spring Boot REST', 'JWT Auth', 'WebSocket Service', 'Alert Manager', 'Device Commander'] },
-    { label: 'DATA & AI LAYER', items: ['MongoDB', 'Python AI Service', 'Anomaly Detection', 'Firebase Cloud Msg'] },
-    { label: 'CLIENT LAYER', items: ['Angular Dashboard', 'Flutter Mobile', 'WebSocket Client', 'Push Notifications'] },
-  ];
+
 }
